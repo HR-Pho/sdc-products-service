@@ -20,7 +20,7 @@ const productsSchema = new Schema({
           name: String,
           original_price: Number,
           sale_price: Number,
-          default?: Boolean,
+          isDefault: Boolean,
           photos: [
               {
                   thumbnail: String,
