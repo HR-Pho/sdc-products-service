@@ -11,4 +11,5 @@ const pool = new Pool({
 
 
 
-module.exports = {pool};
+// module.exports = {products};
+exports.products = pool;

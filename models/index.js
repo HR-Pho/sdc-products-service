@@ -1,0 +1,1 @@
+exports.allProducts = require('./all-products.js');
