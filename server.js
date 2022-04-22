@@ -11,6 +11,7 @@ const controllers = require('./controllers/index.js');
 app.use(express.json());
 
 app.get('/products', controllers.allProducts.getAll);
+app.get('/products/:product_id', controllers.allProducts.getOne);
 
 
 app.listen(port);
