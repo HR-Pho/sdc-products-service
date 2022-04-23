@@ -32,7 +32,11 @@ module.exports = {
       if (err) {
         res.sendStatus(404);
       } else {
-        res.send(styles);
+        const result = {
+          product_id: productId,
+          results: styles,
+        }
+        res.send(result);
       }
     });
   },

@@ -50,17 +50,17 @@ module.exports = {
 
     const results = await Promise.all(styleIds.map(async (styleId) => {
       const styleQuery = `
-      SELECT s.id AS style_id, s.name, s.sale_price, s.original_price, default_style AS "default?", json_object_agg(
-        sk.id, json_build_object(
-          'size', sk.size,
-          'quantity', sk.quantity
-        )
-      ) skus, json_agg(
+      SELECT s.id AS style_id, s.name, s.sale_price, s.original_price, default_style AS "default?", json_agg(
         json_build_object(
           'url', p.url,
           'thumbnail_url', p.thumbnail_url
         )
-      ) photos
+      ) photos, json_object_agg(
+        sk.id, json_build_object(
+          'size', sk.size,
+          'quantity', sk.quantity
+        )
+      ) skus
       FROM Styles s
       INNER JOIN Skus sk
       ON s.id = sk.style_id
