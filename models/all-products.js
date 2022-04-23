@@ -63,16 +63,16 @@ module.exports = {
       ) skus
       FROM Styles s
       INNER JOIN Skus sk
-      ON s.id = sk.style_id
+      ON sk.style_id = s.id
       INNER JOIN Photos p
-      ON s.id = p.style_id
+      ON p.style_id = s.id
       WHERE s.id = ${styleId.id}
       GROUP BY s.id
       `;
 
       const style = await products.query(styleQuery).then(res => res.rows[0]);
       return style;
-    }))
+    })).catch(err => callback(err.stack))
 
     callback(null, results);
 
