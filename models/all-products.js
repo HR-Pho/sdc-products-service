@@ -97,7 +97,8 @@ module.exports = {
           )
         )
         FROM Photos p
-        WHERE p.style_id = s.id) photos,
+        WHERE p.style_id = s.id
+      ) photos,
       (SELECT json_object_agg(
         sk.id, json_build_object(
           'size', sk.size,
