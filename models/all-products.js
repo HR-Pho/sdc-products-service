@@ -21,30 +21,85 @@ module.exports = {
     `;
 
     const featuresString = `
-    SELECT * FROM Features
+    SELECT feature, value FROM Features
     WHERE product_id = ${productId}
     ORDER BY id
     `;
 
-    products.query(productString)
-      .then((productResult) => {
-        const product = productResult.rows[0];
-        products.query(featuresString)
-          .then((featuresResult) => {
-            const features = [];
-            featuresResult.rows.forEach((item) => {
-              const { feature:featureName, value } = item;
-              const feature = {
-                feature: featureName,
-                value
-              };
-              features.push(feature);
-            })
-            product.features = features;
-            callback(null, product);
-          })
-          .catch(err => callback(err.stack));
+    Promise.all([
+      products.query(productString),
+      products.query(featuresString),
+    ])
+      .then(res => {
+        const product = {
+          ...res[0].rows[0],
+          features: res[1].rows,
+        };
+        callback(null, product);
       })
-      .catch(err => callback(err.stack));
+        .catch(err => callback(err));
+  },
+
+  getStyles: async (productId, callback) => {
+    // products.query(`
+    //   SELECT st.*, photos
+    //   FROM Styles st,
+    //     (SELECT row_to_json(p)
+    //       FROM (
+    //         SELECT ph.url, ph.thumbnail_url
+    //         FROM Photos ph
+    //         WHERE ph.style_id = 2
+    //       ) p
+    //     ) photos
+    //     WHERE st.product_id = ${productId}
+    // `).then(res => console.log(res.rows)).catch(err => console.log(err));
+
+
+
+    //gets put into a results array
+    const stylesQuery = `
+    SELECT * FROM Styles
+    WHERE product_id = ${productId}
+    `;
+
+    //gets added to the style object
+    const photosQuery = `
+    SELECT url, thumbnail_url
+    FROM Photos
+    WHERE
+    `;
+
+
+    // {
+    //   product_id,
+    //   results: [
+    //     {
+    //       style
+    //       photos
+    //     }
+    //     skus : {
+    //       sku_id: {
+    //         quantity:
+    //         size:
+    //       }
+    //     },
+    //   ]
+    // }
+
+  },
+
+  getRelated: (productId, callback) => {
+    const queryString = `
+    SELECT related_prod_id
+    FROM Related_Products
+    WHERE curr_prod_id = ${productId}
+    `;
+
+    products.query(queryString)
+      .then(res => {
+        const relatedProducts = res.rows.map((related) => related.related_prod_id);
+        callback(null, relatedProducts);
+      })
+      .catch(err => callback(err));
   }
 }

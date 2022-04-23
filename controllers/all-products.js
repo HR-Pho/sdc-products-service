@@ -22,6 +22,30 @@ module.exports = {
       } else {
         res.send(product);
       }
+    });
+  },
+
+  getStyles: (req, res) => {
+    const { product_id:productId } = req.params;
+
+    models.allProducts.getStyles(productId, (err, styles) => {
+      if (err) {
+        res.sendStatus(404);
+      } else {
+        res.send(styles);
+      }
+    });
+  },
+
+  getRelated: (req, res) => {
+    const {product_id:productId } = req.params;
+
+    models.allProducts.getRelated(productId, (err, relatedProducts) => {
+      if (err) {
+        res.sendStatus(404);
+      } else {
+        res.send(relatedProducts);
+      }
     })
   }
 }
