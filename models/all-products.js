@@ -41,50 +41,40 @@ module.exports = {
   },
 
   getStyles: async (productId, callback) => {
-    // products.query(`
-    //   SELECT st.*, photos
-    //   FROM Styles st,
-    //     (SELECT row_to_json(p)
-    //       FROM (
-    //         SELECT ph.url, ph.thumbnail_url
-    //         FROM Photos ph
-    //         WHERE ph.style_id = 2
-    //       ) p
-    //     ) photos
-    //     WHERE st.product_id = ${productId}
-    // `).then(res => console.log(res.rows)).catch(err => console.log(err));
+    const styleIdQuery = `
+    SELECT id
+    FROM Styles
+    WHERE product_id = ${productId}`;
 
+    const styleIds = await products.query(styleIdQuery).then(res => res.rows);
 
+    const results = await Promise.all(styleIds.map(async (styleId) => {
+      const styleQuery = `
+      SELECT s.id AS style_id, s.name, s.sale_price, s.original_price, default_style AS "default?", json_object_agg(
+        sk.id, json_build_object(
+          'size', sk.size,
+          'quantity', sk.quantity
+        )
+      ) skus, json_agg(
+        json_build_object(
+          'url', p.url,
+          'thumbnail_url', p.thumbnail_url
+        )
+      ) photos
+      FROM Styles s
+      INNER JOIN Skus sk
+      ON s.id = sk.style_id
+      INNER JOIN Photos p
+      ON s.id = p.style_id
+      WHERE s.id = ${styleId.id}
+      GROUP BY s.id
+      `;
 
-    //gets put into a results array
-    const stylesQuery = `
-    SELECT * FROM Styles
-    WHERE product_id = ${productId}
-    `;
+      const style = await products.query(styleQuery).then(res => res.rows[0]);
+      return style;
+    }))
 
-    //gets added to the style object
-    const photosQuery = `
-    SELECT url, thumbnail_url
-    FROM Photos
-    WHERE
-    `;
-
-
-    // {
-    //   product_id,
-    //   results: [
-    //     {
-    //       style
-    //       photos
-    //     }
-    //     skus : {
-    //       sku_id: {
-    //         quantity:
-    //         size:
-    //       }
-    //     },
-    //   ]
-    // }
+    callback(null, results);
 
   },
 

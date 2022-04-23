@@ -1,0 +1,11 @@
+SELECT id, quantity, size
+FROM Skus
+WHERE style_id = (
+  SELECT id
+  FROM Styles
+  WHERE product_id = 19
+)
+
+SELECT id
+FROM Styles
+WHERE product_id = 19;
