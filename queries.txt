@@ -9,3 +9,53 @@ WHERE style_id = (
 SELECT id
 FROM Styles
 WHERE product_id = 19;
+
+
+
+SELECT
+s.id,
+s.name,
+s.sale_price,
+s.original_price,
+default_style AS "default?",
+(SELECT json_agg(
+  json_build_object(
+    'url', p.url,
+    'thumbnail_url', p.thumbnail_url
+    )
+  )
+  FROM Photos p
+  WHERE p.style_id = s.id) photos,
+(SELECT json_object_agg(
+  sk.id, json_build_object(
+    'size', sk.size,
+    'quantity', sk.quantity
+    )
+  )
+  FROM Skus sk
+  WHERE sk.style_id = s.id
+) skus
+FROM Styles s,
+Skus sk
+WHERE s.id IN (
+SELECT s.id
+FROM Styles s
+WHERE s.product_id = 2
+)
+GROUP BY s.id
+ORDER BY s.id
+
+
+SELECT
+p.*,
+(SELECT json_agg(
+    json_build_object(
+      'feature', f.feature,
+      'value', f.value
+    )
+  )
+  FROM Features f
+  WHERE f.product_id = 500
+) features
+FROM Products p
+WHERE p.id = 500

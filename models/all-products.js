@@ -15,29 +15,49 @@ module.exports = {
   },
 
   getOne: (productId, callback) => {
-    const productString = `
-    SELECT * FROM Products
-    WHERE id = ${productId}
+    // const productString = `
+    // SELECT * FROM Products
+    // WHERE id = ${productId}
+    // `;
+
+    // const featuresString = `
+    // SELECT feature, value FROM Features
+    // WHERE product_id = ${productId}
+    // ORDER BY id
+    // `;
+
+    // Promise.all([
+    //   products.query(productString),
+    //   products.query(featuresString),
+    // ])
+    //   .then(res => {
+    //     const product = {
+    //       ...res[0].rows[0],
+    //       features: res[1].rows,
+    //     };
+    //     callback(null, product);
+    //   })
+    //   .catch(err => callback(err));
+
+    const queryString = `
+    SELECT
+    p.*,
+    (SELECT json_agg(
+        json_build_object(
+          'feature', f.feature,
+          'value', f.value
+        )
+      )
+      FROM Features f
+      WHERE f.product_id = ${productId}
+    ) features
+    FROM Products p
+    WHERE p.id = ${productId}
     `;
 
-    const featuresString = `
-    SELECT feature, value FROM Features
-    WHERE product_id = ${productId}
-    ORDER BY id
-    `;
-
-    Promise.all([
-      products.query(productString),
-      products.query(featuresString),
-    ])
-      .then(res => {
-        const product = {
-          ...res[0].rows[0],
-          features: res[1].rows,
-        };
-        callback(null, product);
-      })
-        .catch(err => callback(err));
+    products.query(queryString)
+      .then(res => callback(null, res.rows[0]))
+      .catch(err => callback(err));
   },
 
   getStyles: (productId, callback) => {
@@ -72,7 +92,6 @@ module.exports = {
       FROM Styles s
       WHERE s.product_id = ${productId}
     )
-    GROUP BY s.id
     ORDER BY s.id
     `;
 
