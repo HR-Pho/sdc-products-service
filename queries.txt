@@ -12,40 +12,7 @@ WHERE product_id = 19;
 
 
 
-SELECT
-s.id,
-s.name,
-s.sale_price,
-s.original_price,
-default_style AS "default?",
-(SELECT json_agg(
-  json_build_object(
-    'url', p.url,
-    'thumbnail_url', p.thumbnail_url
-    )
-  )
-  FROM Photos p
-  WHERE p.style_id = s.id) photos,
-(SELECT json_object_agg(
-  sk.id, json_build_object(
-    'size', sk.size,
-    'quantity', sk.quantity
-    )
-  )
-  FROM Skus sk
-  WHERE sk.style_id = s.id
-) skus
-FROM Styles s,
-Skus sk
-WHERE s.id IN (
-SELECT s.id
-FROM Styles s
-WHERE s.product_id = 2
-)
-GROUP BY s.id
-ORDER BY s.id
-
-
+INDIVIDUAL PRODUCT:
 SELECT
 p.*,
 (SELECT json_agg(
@@ -58,45 +25,45 @@ p.*,
   WHERE f.product_id = 500
 ) features
 FROM Products p
-WHERE p.id = 500
+WHERE p.id = 1;
+
+TIME = 0.715ms for product 1
+TIME = 3.959 ms for product 1,000,000
 
 
 
-SELECT json_agg(
-  rel.related_prod_id
-)
-FROM Related_Products rel
-WHERE curr_prod_id = 1;
-
-
-EXPLAIN ANALYZE SELECT
-      s.id,
-      s.name,
-      s.sale_price,
-      s.original_price,
-      default_style AS "default?",
-      (SELECT json_agg(
-        json_build_object(
-          'url', p.url,
-          'thumbnail_url', p.thumbnail_url
-          )
-        )
-        FROM Photos p
-        WHERE p.style_id = s.id
-      ) photos,
-      (SELECT json_object_agg(
-        sk.id, json_build_object(
-          'size', sk.size,
-          'quantity', sk.quantity
-          )
-        )
-        FROM Skus sk
-        WHERE sk.style_id = s.id
-      ) skus
-    FROM Styles s
-    WHERE s.id IN (
-      SELECT s.id
-      FROM Styles s
-      WHERE s.product_id = 1
+STYLES FOR PRODUCT:
+SELECT
+s.id AS "style_id",
+s.name,
+s.sale_price,
+s.original_price,
+default_style AS "default?",
+(SELECT json_agg(
+  json_build_object(
+    'url', p.url,
+    'thumbnail_url', p.thumbnail_url
     )
-    ORDER BY s.id
+  )
+  FROM Photos p
+  WHERE p.style_id = s.id
+) photos,
+(SELECT json_object_agg(
+  sk.id, json_build_object(
+    'size', sk.size,
+    'quantity', sk.quantity
+    )
+  )
+  FROM Skus sk
+  WHERE sk.style_id = s.id
+) skus
+FROM Styles s
+WHERE s.id IN (
+SELECT s.id
+FROM Styles s
+WHERE s.product_id = 1
+)
+ORDER BY s.id;
+
+Time = 8.102ms for product 1
+Time = 6.752ms for product 1,000,000

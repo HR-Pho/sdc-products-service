@@ -1,12 +1,10 @@
-// move the login data into a separate, hidden file for production
-
 const { Pool } = require('pg');
 const pool = new Pool({
-  user: 'kylenissley',
-  host: 'localhost',
-  database: 'products',
-  password: 'password',
-  port: 5432,
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT,
 });
 
 exports.products = pool;
