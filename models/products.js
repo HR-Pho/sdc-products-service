@@ -1,4 +1,4 @@
-const { products } = require('../db.js');
+const { products } = require('./db.js');
 
 module.exports = {
   getAll: (page = 1, count = 5, callback) => {
