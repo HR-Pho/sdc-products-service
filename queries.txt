@@ -59,3 +59,44 @@ p.*,
 ) features
 FROM Products p
 WHERE p.id = 500
+
+
+
+SELECT json_agg(
+  rel.related_prod_id
+)
+FROM Related_Products rel
+WHERE curr_prod_id = 1;
+
+
+EXPLAIN ANALYZE SELECT
+      s.id,
+      s.name,
+      s.sale_price,
+      s.original_price,
+      default_style AS "default?",
+      (SELECT json_agg(
+        json_build_object(
+          'url', p.url,
+          'thumbnail_url', p.thumbnail_url
+          )
+        )
+        FROM Photos p
+        WHERE p.style_id = s.id
+      ) photos,
+      (SELECT json_object_agg(
+        sk.id, json_build_object(
+          'size', sk.size,
+          'quantity', sk.quantity
+          )
+        )
+        FROM Skus sk
+        WHERE sk.style_id = s.id
+      ) skus
+    FROM Styles s
+    WHERE s.id IN (
+      SELECT s.id
+      FROM Styles s
+      WHERE s.product_id = 1
+    )
+    ORDER BY s.id

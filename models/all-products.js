@@ -15,30 +15,6 @@ module.exports = {
   },
 
   getOne: (productId, callback) => {
-    // const productString = `
-    // SELECT * FROM Products
-    // WHERE id = ${productId}
-    // `;
-
-    // const featuresString = `
-    // SELECT feature, value FROM Features
-    // WHERE product_id = ${productId}
-    // ORDER BY id
-    // `;
-
-    // Promise.all([
-    //   products.query(productString),
-    //   products.query(featuresString),
-    // ])
-    //   .then(res => {
-    //     const product = {
-    //       ...res[0].rows[0],
-    //       features: res[1].rows,
-    //     };
-    //     callback(null, product);
-    //   })
-    //   .catch(err => callback(err));
-
     const queryString = `
     SELECT
     p.*,
@@ -63,7 +39,7 @@ module.exports = {
   getStyles: (productId, callback) => {
     const styleQuery = `
     SELECT
-      s.id,
+      s.id AS "style_id",
       s.name,
       s.sale_price,
       s.original_price,

@@ -7,6 +7,6 @@ export const options = {
 };
 
 export default function () {
-  http.get('http://localhost:3500/products/420');
+  http.get('http://localhost:3500/products/500');
   sleep(1);
 }
