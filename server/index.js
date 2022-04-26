@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const app = express();
-const port = process.env.port || 3500;
+const port = process.env.SERVICE_PORT || 3500;
 const controllers = require('../controllers/index.js');
 
 
