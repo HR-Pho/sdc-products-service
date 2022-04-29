@@ -16,19 +16,9 @@ module.exports = {
 
   getOne: (productId, callback) => {
     const queryString = `
-    SELECT
-    p.*,
-    (SELECT json_agg(
-        json_build_object(
-          'feature', f.feature,
-          'value', f.value
-        )
-      )
-      FROM Features f
-      WHERE f.product_id = ${productId}
-    ) features
-    FROM Products p
-    WHERE p.id = ${productId}
+    SELECT *
+    FROM features_mv
+    WHERE id = ${productId}
     `;
 
     products.query(queryString)
@@ -38,37 +28,13 @@ module.exports = {
 
   getStyles: (productId, callback) => {
     const styleQuery = `
-    SELECT
-      s.id AS "style_id",
-      s.name,
-      s.sale_price,
-      s.original_price,
-      default_style AS "default?",
-      (SELECT json_agg(
-        json_build_object(
-          'url', p.url,
-          'thumbnail_url', p.thumbnail_url
-          )
-        )
-        FROM Photos p
-        WHERE p.style_id = s.id
-      ) photos,
-      (SELECT json_object_agg(
-        sk.id, json_build_object(
-          'size', sk.size,
-          'quantity', sk.quantity
-          )
-        )
-        FROM Skus sk
-        WHERE sk.style_id = s.id
-      ) skus
-    FROM Styles s
-    WHERE s.id IN (
+    SELECT *
+    FROM styles_mv
+    WHERE style_id IN (
       SELECT s.id
       FROM Styles s
       WHERE s.product_id = ${productId}
     )
-    ORDER BY s.id
     `;
 
     products.query(styleQuery)
