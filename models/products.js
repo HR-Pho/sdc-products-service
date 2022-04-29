@@ -28,17 +28,12 @@ module.exports = {
 
   getStyles: (productId, callback) => {
     const styleQuery = `
-    SELECT *
-    FROM styles_mv
-    WHERE style_id IN (
-      SELECT s.id
-      FROM Styles s
-      WHERE s.product_id = ${productId}
-    )
+    SELECT product FROM styles_mv_3
+    WHERE id = ${productId}
     `;
 
     products.query(styleQuery)
-      .then(res => callback(null, res.rows))
+      .then(res => callback(null, res.rows[0].product))
       .catch(err => callback(err.stack));
   },
 

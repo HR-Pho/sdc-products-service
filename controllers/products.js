@@ -2,7 +2,7 @@ const models = require('../models');
 
 module.exports = {
   getAll: (req, res) => {
-    const { page, count} = req.query;
+    const { page, count } = req.query;
 
     models.allProducts.getAll(page, count, (err, products) => {
       if (err) {
@@ -14,7 +14,7 @@ module.exports = {
   },
 
   getOne: (req, res) => {
-    const { product_id:productId } = req.params;
+    const { product_id: productId } = req.params;
 
     models.allProducts.getOne(productId, (err, product) => {
       if (err) {
@@ -26,23 +26,19 @@ module.exports = {
   },
 
   getStyles: (req, res) => {
-    const { product_id:productId } = req.params;
+    const { product_id: productId } = req.params;
 
     models.allProducts.getStyles(productId, (err, styles) => {
       if (err) {
         res.sendStatus(404);
       } else {
-        const result = {
-          product_id: productId,
-          results: styles,
-        }
-        res.send(result);
+        res.send(styles);
       }
     });
   },
 
   getRelated: (req, res) => {
-    const {product_id:productId } = req.params;
+    const { product_id: productId } = req.params;
 
     models.allProducts.getRelated(productId, (err, relatedProducts) => {
       if (err) {
